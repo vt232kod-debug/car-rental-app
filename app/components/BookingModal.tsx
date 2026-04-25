@@ -208,7 +208,7 @@ function CalendarPanel({
 
   function MonthGrid({ m, daysArr }: { m: Date; daysArr: (Date | null)[] }) {
     return (
-      <div className='min-w-[260px] flex-1'>
+      <div className='min-w-0 flex-1'>
         <p className='mb-4 text-center text-sm font-semibold text-foreground'>
           {fmtMonthYear(m)}
         </p>
@@ -632,7 +632,7 @@ export default function BookingModal({
             />
 
             {/* Center: calendar */}
-            <div className='flex-1 lg:overflow-y-auto'>
+            <div className='flex-1 overflow-x-hidden lg:overflow-y-auto'>
               <CalendarPanel
                 startDate={startDate}
                 endDate={endDate}
