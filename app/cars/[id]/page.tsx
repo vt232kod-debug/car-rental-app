@@ -77,7 +77,7 @@ export default async function CarPage({ params }: СarPageProps) {
               carId={car.id}
               carBrand={car.brand}
               carModel={car.model}
-              carImage={car.images?.[0] ?? ''}
+              carImage={car.image}
             />
           </div>
         </div>
