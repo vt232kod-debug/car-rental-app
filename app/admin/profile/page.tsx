@@ -5,14 +5,18 @@ import { updatePassword, updateUserName } from '@/app/lib/actions';
 
 const inputClass =
   'w-full rounded-xl border border-border bg-surface-alt px-4 py-2.5 text-sm text-foreground placeholder:text-muted focus:border-accent focus:outline-none transition-colors';
-const labelClass = 'block mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted';
+const labelClass =
+  'block mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted';
 const cardClass = 'rounded-2xl border border-border bg-surface p-6 mb-5';
 
-export default async function Profile() {
+export default async function AdminProfile() {
   const session = await auth();
   if (!session) redirect('/login');
+  if (session.user.role !== 'ADMIN') redirect('/dashboard');
 
-  const user = await prisma.user.findUnique({ where: { id: session.user?.id } });
+  const user = await prisma.user.findUnique({
+    where: { id: session.user?.id },
+  });
   if (!user) redirect('/login');
 
   const initials = user.name
@@ -41,7 +45,9 @@ export default async function Profile() {
 
         <form action={updateUserName} className='flex gap-3'>
           <div className='flex-1'>
-            <label htmlFor='name' className={labelClass}>Display Name</label>
+            <label htmlFor='name' className={labelClass}>
+              Display Name
+            </label>
             <input
               id='name'
               name='name'
@@ -60,10 +66,14 @@ export default async function Profile() {
 
       {/* Password card */}
       <div className={cardClass}>
-        <h2 className='text-sm font-bold text-foreground mb-5'>Change Password</h2>
+        <h2 className='text-sm font-bold text-foreground mb-5'>
+          Change Password
+        </h2>
         <form action={updatePassword} className='flex flex-col gap-4'>
           <div>
-            <label htmlFor='currentPassword' className={labelClass}>Current Password</label>
+            <label htmlFor='currentPassword' className={labelClass}>
+              Current Password
+            </label>
             <input
               id='currentPassword'
               name='currentPassword'
@@ -73,7 +83,9 @@ export default async function Profile() {
             />
           </div>
           <div>
-            <label htmlFor='newPassword' className={labelClass}>New Password</label>
+            <label htmlFor='newPassword' className={labelClass}>
+              New Password
+            </label>
             <input
               id='newPassword'
               name='newPassword'
