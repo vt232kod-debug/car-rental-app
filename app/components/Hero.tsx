@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import HeroStats from './HeroStats';
 
 export default function Hero() {
   return (
@@ -85,21 +86,7 @@ export default function Hero() {
           </Link>
         </div>
 
-        {/* Stats row */}
-        <div className='animate-fade-up animation-delay-400 mt-16 grid grid-cols-3 gap-8 border-t border-white/20 pt-10 sm:gap-16'>
-          {[
-            { value: '50+', label: 'Premium Cars' },
-            { value: '1k+', label: 'Happy Clients' },
-            { value: '4.9', label: 'Average Rating' },
-          ].map(stat => (
-            <div key={stat.label} className='text-center'>
-              <div className='text-2xl font-extrabold text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.5)] md:text-3xl'>
-                {stat.value}
-              </div>
-              <div className='mt-1 text-xs text-white/60'>{stat.label}</div>
-            </div>
-          ))}
-        </div>
+        <HeroStats />
       </div>
     </section>
   );
