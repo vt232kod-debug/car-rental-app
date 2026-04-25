@@ -71,7 +71,7 @@ export default async function Dashboard() {
           {upcoming.map(booking => (
             <div
               key={booking.id}
-              className='flex items-center justify-between rounded-2xl border border-border bg-surface p-5 transition-colors hover:border-accent/40'
+              className='flex flex-col gap-3 rounded-2xl border border-border bg-surface p-5 transition-colors hover:border-accent/40 sm:flex-row sm:items-center sm:justify-between'
             >
               <div>
                 <p className='font-semibold text-foreground'>

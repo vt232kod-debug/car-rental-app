@@ -85,7 +85,8 @@ export default async function DashboardLayout({
 
   return (
     <div className='flex min-h-screen bg-background'>
-      <aside className='w-60 shrink-0 border-r border-border bg-surface flex flex-col py-6 px-3'>
+      {/* Sidebar — desktop only */}
+      <aside className='hidden lg:flex w-60 shrink-0 border-r border-border bg-surface flex-col py-6 px-3'>
         <div className='px-3 mb-6'>
           <Link href='/' className='text-lg font-extrabold text-accent'>
             Rentola
@@ -121,7 +122,37 @@ export default async function DashboardLayout({
         </div>
       </aside>
 
-      <main className='flex-1 overflow-y-auto p-8'>{children}</main>
+      {/* Mobile top bar */}
+      <header className='fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-border bg-surface px-4 py-3 lg:hidden'>
+        <Link href='/' className='text-lg font-extrabold text-accent'>
+          Rentola
+        </Link>
+        <span className='text-xs font-semibold uppercase tracking-wider text-muted'>
+          Dashboard
+        </span>
+        <div className='flex h-8 w-8 items-center justify-center rounded-xl bg-accent text-xs font-bold text-white'>
+          {initials}
+        </div>
+      </header>
+
+      {/* Main content */}
+      <main className='flex-1 overflow-y-auto p-4 pt-[72px] pb-24 lg:p-8 lg:pt-8 lg:pb-8'>
+        {children}
+      </main>
+
+      {/* Mobile bottom nav */}
+      <nav className='fixed inset-x-0 bottom-0 z-40 flex border-t border-border bg-surface lg:hidden'>
+        {navItems.map(item => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className='flex flex-1 flex-col items-center gap-1 py-3 text-muted transition-colors hover:text-accent'
+          >
+            {item.icon}
+            <span className='text-[10px] font-semibold'>{item.label}</span>
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }

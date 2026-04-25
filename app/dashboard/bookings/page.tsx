@@ -38,7 +38,7 @@ export default async function Bookings() {
           {bookings.map(booking => (
             <div
               key={booking.id}
-              className='flex items-center gap-5 rounded-2xl border border-border bg-surface p-5 transition-colors hover:border-accent/40'
+              className='flex flex-col gap-3 rounded-2xl border border-border bg-surface p-5 transition-colors hover:border-accent/40 sm:flex-row sm:items-center sm:gap-5'
             >
               <div className='flex-1 min-w-0'>
                 <h3 className='font-semibold text-foreground'>

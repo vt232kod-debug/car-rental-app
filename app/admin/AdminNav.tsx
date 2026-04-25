@@ -86,8 +86,34 @@ const navItems = [
   },
 ];
 
-export default function AdminNav() {
+export default function AdminNav({ mobile = false }: { mobile?: boolean }) {
   const pathname = usePathname();
+
+  if (mobile) {
+    return (
+      <>
+        {navItems.map(item => {
+          const isActive =
+            item.href === '/admin'
+              ? pathname === '/admin'
+              : pathname.startsWith(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={[
+                'flex flex-1 flex-col items-center gap-1 py-3 transition-colors',
+                isActive ? 'text-accent' : 'text-muted hover:text-accent',
+              ].join(' ')}
+            >
+              {item.icon}
+              <span className='text-[10px] font-semibold'>{item.label}</span>
+            </Link>
+          );
+        })}
+      </>
+    );
+  }
 
   return (
     <nav className='flex flex-col gap-1'>
