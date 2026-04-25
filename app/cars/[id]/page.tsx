@@ -72,7 +72,13 @@ export default async function CarPage({ params }: СarPageProps) {
               </p>
             )}
 
-            <BookingCalculator pricePerDay={car.pricePerDay} carId={car.id} />
+            <BookingCalculator
+              pricePerDay={car.pricePerDay}
+              carId={car.id}
+              carBrand={car.brand}
+              carModel={car.model}
+              carImage={car.images?.[0] ?? ''}
+            />
           </div>
         </div>
       </div>
