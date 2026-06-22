@@ -15,20 +15,20 @@ vi.mock('next/link', () => ({
 describe('Hero', () => {
   it('renders main heading', () => {
     render(<Hero />);
-    expect(screen.getByText('Dream Car')).toBeInTheDocument();
+    expect(screen.getByText(/Find the Perfect Car/)).toBeInTheDocument();
   });
 
   it('renders Browse Cars link', () => {
     render(<Hero />);
-    expect(screen.getByRole('link', { name: 'Browse Cars' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /Browse Cars/ })).toHaveAttribute(
       'href',
       '/cars'
     );
   });
 
-  it('renders Learn More link', () => {
+  it('renders How It Works link', () => {
     render(<Hero />);
-    expect(screen.getByRole('link', { name: 'Learn More' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'How It Works' })).toHaveAttribute(
       'href',
       '/about'
     );

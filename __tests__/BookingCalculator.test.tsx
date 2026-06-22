@@ -6,44 +6,54 @@ vi.mock('../app/lib/actions', () => ({
   createBooking: vi.fn(),
 }));
 
+const props = {
+  pricePerDay: 80,
+  carId: 'car-1',
+  carBrand: 'Toyota',
+  carModel: 'Camry',
+  carImage: '/car.jpg',
+};
+
 describe('BookingCalculator', () => {
-  it('renders Book This Car heading', () => {
-    render(<BookingCalculator pricePerDay={80} carId='car-1' />);
+  it('renders the "Book This Car" heading', () => {
+    render(<BookingCalculator {...props} />);
     expect(screen.getByText('Book This Car')).toBeInTheDocument();
   });
 
-  it('renders month navigation buttons', () => {
-    render(<BookingCalculator pricePerDay={80} carId='car-1' />);
-    expect(screen.getByText('<')).toBeInTheDocument();
-    expect(screen.getByText('>')).toBeInTheDocument();
+  it('renders the price per day', () => {
+    render(<BookingCalculator {...props} />);
+    expect(screen.getByText('/ day')).toBeInTheDocument();
   });
 
-  it('renders day headers', () => {
-    render(<BookingCalculator pricePerDay={80} carId='car-1' />);
-    expect(screen.getByText('Mon')).toBeInTheDocument();
-    expect(screen.getByText('Sat')).toBeInTheDocument();
+  it('renders the "Select Dates & Book" button', () => {
+    render(<BookingCalculator {...props} />);
+    expect(
+      screen.getByRole('button', { name: /select dates & book/i })
+    ).toBeInTheDocument();
   });
 
-  it('Book Now button is disabled when no dates selected', () => {
-    render(<BookingCalculator pricePerDay={80} carId='car-1' />);
-    expect(screen.getByText('Book Now')).toBeDisabled();
+  it('does not render the booking modal until the button is clicked', () => {
+    render(<BookingCalculator {...props} />);
+    expect(screen.queryByText('Your ride')).not.toBeInTheDocument();
+    expect(screen.queryByText('Book Now')).not.toBeInTheDocument();
   });
 
-  it('navigates to next month on > click', () => {
-    render(<BookingCalculator pricePerDay={80} carId='car-1' />);
-    const before = screen.getByText(/\w+ \d{4}/).textContent;
-    fireEvent.click(screen.getByText('>'));
-    const after = screen.getByText(/\w+ \d{4}/).textContent;
-    expect(after).not.toBe(before);
+  it('opens the booking modal when the button is clicked', () => {
+    render(<BookingCalculator {...props} />);
+    fireEvent.click(
+      screen.getByRole('button', { name: /select dates & book/i })
+    );
+    expect(screen.getByText('Your ride')).toBeInTheDocument();
+    expect(screen.getByText('Book Now')).toBeInTheDocument();
   });
 
-  it('enables Book Now after selecting start and end date', () => {
-    render(<BookingCalculator pricePerDay={100} carId='car-1' />);
-    const dayBtns = screen
-      .getAllByRole('button')
-      .filter(btn => /^\d+$/.test(btn.textContent ?? ''));
-    fireEvent.click(dayBtns[0]);
-    fireEvent.click(dayBtns[5]);
-    expect(screen.getByText('Book Now')).not.toBeDisabled();
+  it('shows the selected car details inside the modal', () => {
+    render(<BookingCalculator {...props} />);
+    fireEvent.click(
+      screen.getByRole('button', { name: /select dates & book/i })
+    );
+    expect(
+      screen.getByRole('heading', { name: 'Toyota Camry' })
+    ).toBeInTheDocument();
   });
 });

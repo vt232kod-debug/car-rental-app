@@ -26,13 +26,12 @@ describe('Footer', () => {
 
   it('renders About and Contact links', () => {
     render(<Footer />);
-    expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute(
-      'href',
-      '/about'
-    );
-    expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute(
-      'href',
-      '/contact'
+    // "About" / "Contact" appear in both the link columns and the bottom bar.
+    const aboutLinks = screen.getAllByRole('link', { name: 'About' });
+    expect(aboutLinks.some(l => l.getAttribute('href') === '/about')).toBe(true);
+    const contactLinks = screen.getAllByRole('link', { name: 'Contact' });
+    expect(contactLinks.some(l => l.getAttribute('href') === '/contact')).toBe(
+      true
     );
   });
 });
