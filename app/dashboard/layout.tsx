@@ -1,6 +1,7 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import LogoutButton from '@/app/components/LogoutButton';
 
 const navItems = [
   {
@@ -109,16 +110,21 @@ export default async function DashboardLayout({
           ))}
         </nav>
 
-        <div className='mt-auto border-t border-border pt-4 px-3 flex items-center gap-3'>
-          <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent text-xs font-bold text-white'>
-            {initials}
+        <div className='mt-auto border-t border-border pt-4 px-3'>
+          <div className='flex items-center gap-3'>
+            <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent text-xs font-bold text-white'>
+              {initials}
+            </div>
+            <div className='min-w-0 flex-1'>
+              <p className='truncate text-sm font-semibold text-foreground'>
+                {session.user?.name}
+              </p>
+              <p className='truncate text-xs text-muted'>
+                {session.user?.email}
+              </p>
+            </div>
           </div>
-          <div className='min-w-0 flex-1'>
-            <p className='truncate text-sm font-semibold text-foreground'>
-              {session.user?.name}
-            </p>
-            <p className='truncate text-xs text-muted'>{session.user?.email}</p>
-          </div>
+          <LogoutButton className='mt-3 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted transition-all hover:bg-surface-alt hover:text-foreground' />
         </div>
       </aside>
 
@@ -130,8 +136,14 @@ export default async function DashboardLayout({
         <span className='text-xs font-semibold uppercase tracking-wider text-muted'>
           Dashboard
         </span>
-        <div className='flex h-8 w-8 items-center justify-center rounded-xl bg-accent text-xs font-bold text-white'>
-          {initials}
+        <div className='flex items-center gap-2'>
+          <div className='flex h-8 w-8 items-center justify-center rounded-xl bg-accent text-xs font-bold text-white'>
+            {initials}
+          </div>
+          <LogoutButton
+            iconOnly
+            className='flex h-8 w-8 items-center justify-center rounded-xl text-muted transition-colors hover:bg-surface-alt hover:text-foreground'
+          />
         </div>
       </header>
 

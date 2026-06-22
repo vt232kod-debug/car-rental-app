@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
+import UserMenu from './UserMenu';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -30,6 +31,12 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Dashboard and admin have their own layout chrome (sidebar + mobile nav),
+  // so the global site header must not render there.
+  if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
@@ -38,7 +45,7 @@ export default function Header() {
           : 'border-b border-transparent bg-transparent'
       }`}
     >
-      <nav className='mx-auto flex max-w-7xl items-center justify-between px-6 py-4'>
+      <nav className='relative mx-auto flex max-w-7xl items-center justify-between px-6 py-4'>
         <Link
           href='/'
           onClick={closeMenu}
@@ -47,8 +54,8 @@ export default function Header() {
           Rentola
         </Link>
 
-        {/* Desktop nav */}
-        <div className='hidden items-center gap-8 md:flex'>
+        {/* Desktop nav — absolutely centered regardless of side widths */}
+        <div className='absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 md:flex'>
           {navLinks.map(link => (
             <Link
               key={link.href}
@@ -69,24 +76,7 @@ export default function Header() {
           <ThemeToggle />
 
           {session ? (
-            <>
-              <Link
-                href={session.user?.role === 'ADMIN' ? '/admin' : '/dashboard'}
-                className={`text-sm transition-colors ${
-                  useWhiteText
-                    ? 'text-white/80 hover:text-white'
-                    : 'text-muted hover:text-foreground'
-                }`}
-              >
-                {session.user?.name}
-              </Link>
-              <button
-                onClick={() => signOut()}
-                className='rounded-full border border-accent px-5 py-2 text-sm text-accent transition-colors hover:bg-accent hover:text-white'
-              >
-                Logout
-              </button>
-            </>
+            <UserMenu session={session} />
           ) : (
             <>
               <Link
@@ -171,15 +161,51 @@ export default function Header() {
 
             {session ? (
               <>
-                <span className='text-sm text-muted'>{session.user?.name}</span>
+                <div className='mt-1 border-t border-border pt-3'>
+                  <p className='text-sm font-semibold text-foreground'>
+                    {session.user?.name}
+                  </p>
+                  <p className='truncate text-xs text-muted'>
+                    {session.user?.email}
+                  </p>
+                </div>
+                <Link
+                  href={session.user?.role === 'ADMIN' ? '/admin' : '/dashboard'}
+                  onClick={closeMenu}
+                  className='text-sm text-muted transition-colors hover:text-foreground'
+                >
+                  {session.user?.role === 'ADMIN' ? 'Admin panel' : 'Dashboard'}
+                </Link>
+                <Link
+                  href={
+                    session.user?.role === 'ADMIN'
+                      ? '/admin/bookings'
+                      : '/dashboard/bookings'
+                  }
+                  onClick={closeMenu}
+                  className='text-sm text-muted transition-colors hover:text-foreground'
+                >
+                  My Bookings
+                </Link>
+                <Link
+                  href={
+                    session.user?.role === 'ADMIN'
+                      ? '/admin/profile'
+                      : '/dashboard/profile'
+                  }
+                  onClick={closeMenu}
+                  className='text-sm text-muted transition-colors hover:text-foreground'
+                >
+                  Profile
+                </Link>
                 <button
                   onClick={() => {
-                    signOut();
                     closeMenu();
+                    signOut({ callbackUrl: '/' });
                   }}
                   className='inline-flex justify-center rounded-full border border-accent px-5 py-2 text-sm text-accent transition-colors hover:bg-accent hover:text-white'
                 >
-                  Logout
+                  Log out
                 </button>
               </>
             ) : (
