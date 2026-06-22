@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import prisma from '@/app/lib/prisma';
@@ -29,9 +30,9 @@ export default async function Bookings() {
       {bookings.length === 0 ? (
         <div className='rounded-2xl border border-border bg-surface p-12 text-center'>
           <p className='text-muted text-sm mb-3'>No bookings yet.</p>
-          <a href='/cars' className='text-sm font-semibold text-accent hover:underline'>
+          <Link href='/cars' className='text-sm font-semibold text-accent hover:underline'>
             Browse cars →
-          </a>
+          </Link>
         </div>
       ) : (
         <div className='flex flex-col gap-3'>

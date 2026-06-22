@@ -165,6 +165,105 @@ function InfoPanel({
   );
 }
 
+const WEEK_DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+
+/* ─── Single Month Grid ─── */
+function MonthGrid({
+  m,
+  daysArr,
+  startDate,
+  endDate,
+  hover,
+  onSelect,
+  onHover,
+}: {
+  m: Date;
+  daysArr: (Date | null)[];
+  startDate: Date | null;
+  endDate: Date | null;
+  hover: Date | null;
+  onSelect: (day: Date) => void;
+  onHover: (day: Date | null) => void;
+}) {
+  function isInRange(day: Date): boolean {
+    const rangeEnd = endDate ?? (startDate ? hover : null);
+    return !!(startDate && rangeEnd && day > startDate && day < rangeEnd);
+  }
+
+  return (
+    <div className='min-w-0 flex-1'>
+      <p className='mb-4 text-center text-sm font-semibold text-foreground'>
+        {fmtMonthYear(m)}
+      </p>
+      <div className='mb-2 grid grid-cols-7 text-center'>
+        {WEEK_DAYS.map(d => (
+          <span
+            key={d}
+            className='pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted'
+          >
+            {d}
+          </span>
+        ))}
+      </div>
+      <div className='grid grid-cols-7 gap-[3px]'>
+        {daysArr.map((day, i) => {
+          if (!day) return <div key={i} />;
+          const isStart = isSameDay(day, startDate);
+          const isEnd = isSameDay(day, endDate);
+          const inRange = isInRange(day);
+          const past = isPast(day);
+          const todayFlag = isToday(day);
+          const active = isStart || isEnd;
+
+          return (
+            <button
+              key={i}
+              disabled={past}
+              onClick={() => !past && onSelect(day)}
+              onMouseEnter={() => !past && onHover(day)}
+              onMouseLeave={() => onHover(null)}
+              style={{
+                borderRadius: isStart
+                  ? '10px 3px 3px 10px'
+                  : isEnd
+                    ? '3px 10px 10px 3px'
+                    : inRange
+                      ? '3px'
+                      : '10px',
+                background: active
+                  ? 'var(--accent)'
+                  : inRange
+                    ? 'color-mix(in srgb, var(--accent) 15%, transparent)'
+                    : 'transparent',
+                color: active
+                  ? '#fff'
+                  : past
+                    ? 'var(--border)'
+                    : inRange
+                      ? 'var(--accent)'
+                      : todayFlag
+                        ? 'var(--accent)'
+                        : 'var(--foreground)',
+              }}
+              className={[
+                'relative flex aspect-square w-full items-center justify-center text-sm transition-all duration-100',
+                !active && !inRange && !past ? 'hover:bg-surface-alt' : '',
+                past ? 'cursor-default' : 'cursor-pointer',
+                active ? 'font-bold' : '',
+              ].join(' ')}
+            >
+              {day.getDate()}
+              {todayFlag && !active && (
+                <span className='absolute bottom-1 left-1/2 h-[3px] w-[3px] -translate-x-1/2 rounded-full bg-accent' />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Center Calendar Panel ─── */
 function CalendarPanel({
   startDate,
@@ -187,8 +286,6 @@ function CalendarPanel({
   const days = getDaysInMonth(month);
   const nextDays = getDaysInMonth(nextMonth);
 
-  const weekDays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-
   function handleClick(day: Date) {
     if (!startDate || (startDate && endDate)) {
       setStartDate(day);
@@ -199,86 +296,6 @@ function CalendarPanel({
       setStartDate(day);
       setEndDate(null);
     }
-  }
-
-  function isInRange(day: Date): boolean {
-    const rangeEnd = endDate ?? (startDate ? hover : null);
-    return !!(startDate && rangeEnd && day > startDate && day < rangeEnd);
-  }
-
-  function MonthGrid({ m, daysArr }: { m: Date; daysArr: (Date | null)[] }) {
-    return (
-      <div className='min-w-0 flex-1'>
-        <p className='mb-4 text-center text-sm font-semibold text-foreground'>
-          {fmtMonthYear(m)}
-        </p>
-        <div className='mb-2 grid grid-cols-7 text-center'>
-          {weekDays.map(d => (
-            <span
-              key={d}
-              className='pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted'
-            >
-              {d}
-            </span>
-          ))}
-        </div>
-        <div className='grid grid-cols-7 gap-[3px]'>
-          {daysArr.map((day, i) => {
-            if (!day) return <div key={i} />;
-            const isStart = isSameDay(day, startDate);
-            const isEnd = isSameDay(day, endDate);
-            const inRange = isInRange(day);
-            const past = isPast(day);
-            const todayFlag = isToday(day);
-            const active = isStart || isEnd;
-
-            return (
-              <button
-                key={i}
-                disabled={past}
-                onClick={() => !past && handleClick(day)}
-                onMouseEnter={() => !past && setHover(day)}
-                onMouseLeave={() => setHover(null)}
-                style={{
-                  borderRadius: isStart
-                    ? '10px 3px 3px 10px'
-                    : isEnd
-                      ? '3px 10px 10px 3px'
-                      : inRange
-                        ? '3px'
-                        : '10px',
-                  background: active
-                    ? 'var(--accent)'
-                    : inRange
-                      ? 'color-mix(in srgb, var(--accent) 15%, transparent)'
-                      : 'transparent',
-                  color: active
-                    ? '#fff'
-                    : past
-                      ? 'var(--border)'
-                      : inRange
-                        ? 'var(--accent)'
-                        : todayFlag
-                          ? 'var(--accent)'
-                          : 'var(--foreground)',
-                }}
-                className={[
-                  'relative flex aspect-square w-full items-center justify-center text-sm transition-all duration-100',
-                  !active && !inRange && !past ? 'hover:bg-surface-alt' : '',
-                  past ? 'cursor-default' : 'cursor-pointer',
-                  active ? 'font-bold' : '',
-                ].join(' ')}
-              >
-                {day.getDate()}
-                {todayFlag && !active && (
-                  <span className='absolute bottom-1 left-1/2 h-[3px] w-[3px] -translate-x-1/2 rounded-full bg-accent' />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -331,9 +348,25 @@ function CalendarPanel({
 
       {/* Two-month grid */}
       <div className='flex gap-8'>
-        <MonthGrid m={month} daysArr={days} />
+        <MonthGrid
+          m={month}
+          daysArr={days}
+          startDate={startDate}
+          endDate={endDate}
+          hover={hover}
+          onSelect={handleClick}
+          onHover={setHover}
+        />
         <div className='hidden lg:contents'>
-          <MonthGrid m={nextMonth} daysArr={nextDays} />
+          <MonthGrid
+            m={nextMonth}
+            daysArr={nextDays}
+            startDate={startDate}
+            endDate={endDate}
+            hover={hover}
+            onSelect={handleClick}
+            onHover={setHover}
+          />
         </div>
       </div>
 

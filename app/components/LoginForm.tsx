@@ -1,8 +1,6 @@
 'use client';
-import { useState } from 'react';
 import { login } from '@/app/lib/actions';
 export default function LoginForm() {
-  const [error, setError] = useState('');
   return (
     <section className='bg-background py-16'>
       <div className='mx-auto max-w-md px-6'>
@@ -39,8 +37,6 @@ export default function LoginForm() {
               placeholder='••••••••'
             />
           </div>
-
-          {error && <p className='text-sm text-red-500'>{error}</p>}
 
           <button
             type='submit'

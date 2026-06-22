@@ -1,8 +1,11 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useSyncExternalStore } from 'react';
 
 type Theme = 'dark' | 'light';
+
+const STORAGE_KEY = 'rentola-theme';
+const THEME_EVENT = 'rentola-theme-change';
 
 const ThemeCtx = createContext<{ theme: Theme; toggle: () => void }>({
   theme: 'dark',
@@ -13,21 +16,36 @@ export function useTheme() {
   return useContext(ThemeCtx);
 }
 
+function subscribe(callback: () => void) {
+  window.addEventListener(THEME_EVENT, callback);
+  window.addEventListener('storage', callback);
+  return () => {
+    window.removeEventListener(THEME_EVENT, callback);
+    window.removeEventListener('storage', callback);
+  };
+}
+
+function getSnapshot(): Theme {
+  return (localStorage.getItem(STORAGE_KEY) as Theme | null) ?? 'dark';
+}
+
+function getServerSnapshot(): Theme {
+  return 'dark';
+}
+
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark');
+  // useSyncExternalStore reads the persisted theme without calling setState
+  // inside an effect, and React handles the SSR/hydration transition for us.
+  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   useEffect(() => {
-    const saved = localStorage.getItem('rentola-theme') as Theme | null;
-    const initial = saved ?? 'dark';
-    setTheme(initial);
-    document.documentElement.setAttribute('data-theme', initial);
-  }, []);
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   function toggle() {
     const next: Theme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(next);
-    localStorage.setItem('rentola-theme', next);
-    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem(STORAGE_KEY, next);
+    window.dispatchEvent(new Event(THEME_EVENT));
   }
 
   return <ThemeCtx.Provider value={{ theme, toggle }}>{children}</ThemeCtx.Provider>;
